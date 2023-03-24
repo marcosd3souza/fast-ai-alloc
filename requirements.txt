@@ -1,0 +1,7 @@
+numpy>=1.21.5
+pandas>=1.4.2
+ortools>=9.6.2534
+seaborn>=0.11.2
+matplotlib>=3.5.1
+plotly>=5.9.0
+sklearn-som>=1.1.0
