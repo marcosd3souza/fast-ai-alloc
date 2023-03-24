@@ -219,7 +219,7 @@ if __name__ == '__main__':
         filepath = f'./data/input/DAS-2/test_samples/test_sample_{i}.csv'
         sample.to_csv(filepath, sep=';', index=False)
 
-for n_nodes in n_nodes_candi:
+    for n_nodes in n_nodes_candi:
         for i, sample in enumerate(test_samples):
             memory_consumption = sample['UsedMemory'].values.reshape(-1, 1)
 
