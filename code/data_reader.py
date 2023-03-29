@@ -3,6 +3,12 @@ from sklearn_som.som import SOM
 
 from data_sampling import DataSampling
 
+class FakeClassifier:
+    # put all examples in class 0
+    def predict(self, input):
+        size = input.shape[0]
+        return np.array([0] * size)
+
 
 class DataReader:
 
@@ -26,4 +32,6 @@ class DataReader:
         model_cpu = SOM(m=4, n=4, dim=1, random_state=0)
         model_cpu.fit(X_cpu_train)
 
-        return test_samples, model_memory, model_cpu
+        model_fake = FakeClassifier()
+
+        return test_samples, model_memory, model_cpu, model_fake

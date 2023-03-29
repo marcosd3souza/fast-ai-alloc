@@ -170,7 +170,27 @@ def run_linear(n_nodes, test_samples, model_memory, model_cpu):
         linear_solution.to_csv(filepath, sep=';')
 
 
-def run_heuristic(n_nodes, test_samples, model_memory, model_cpu):
+def run_heuristic_cpu_with_class(n_nodes, test_samples, model_memory, model_cpu):
+    run_heuristic(n_nodes, test_samples, model_memory, model_cpu, 'heuristic_cpu_with_class', metric='cpu')
+
+
+def run_heuristic_memory_with_class(n_nodes, test_samples, model_memory, model_cpu):
+    run_heuristic(n_nodes, test_samples, model_memory, model_cpu, 'heuristic_memory_with_class', metric='memory')
+
+
+def run_heuristic_cpu_without_class(n_nodes, test_samples, fake_model):
+    run_heuristic(n_nodes, test_samples, fake_model, fake_model, 'heuristic_cpu_without_class', metric='cpu')
+
+
+def run_heuristic_memory_without_class(n_nodes, test_samples, fake_model):
+    run_heuristic(n_nodes, test_samples, fake_model, fake_model, 'heuristic_memory_without_class', metric='memory')
+
+
+def run_heuristic_multi_without_class(n_nodes, test_samples, fake_model):
+    run_heuristic(n_nodes, test_samples, fake_model, fake_model, 'heuristic_multi_without_class', metric='multi')
+
+
+def run_heuristic(n_nodes, test_samples, model_memory, model_cpu, output_name='heuristic', metric='multi'):
     for i, sample in enumerate(test_samples):
         memory_consumption = sample['UsedMemory'].values.reshape(-1, 1)
         cpu_consumption_time = sample['UsedCPUTime'].values.reshape(-1, 1)
@@ -182,6 +202,7 @@ def run_heuristic(n_nodes, test_samples, model_memory, model_cpu):
 
         # HEURISTIC SOLUTION
         heuristic_solution = HeuristicOptimizer(
+            metric,
             n_requests,
             n_nodes,
             memory_consumption,
@@ -193,15 +214,15 @@ def run_heuristic(n_nodes, test_samples, model_memory, model_cpu):
         heuristic_solution = pd.DataFrame(heuristic_solution)
 
         filepath = Path(
-            './data/output/DAS-2/heuristic/alloc_' + str(n_nodes) + '/heuristic_solution_sample_' + str(i) + '.csv')
+            f'./data/output/DAS-2/{output_name}/alloc_{n_nodes}/{output_name}_solution_sample_{i}.csv')
         filepath.parent.mkdir(parents=True, exist_ok=True)
         heuristic_solution.to_csv(filepath, sep=';')
 
 
-def runInParallel(*fns, n_nodes, test_samples, model_memory, model_cpu):
+def runInParallel(*fns, args):
     proc = []
     for fn in fns:
-        p = Process(target=fn, args=(n_nodes, test_samples, model_memory, model_cpu))
+        p = Process(target=fn, args=args)
         p.start()
         proc.append(p)
     for p in proc:
@@ -210,9 +231,9 @@ def runInParallel(*fns, n_nodes, test_samples, model_memory, model_cpu):
 
 if __name__ == '__main__':
     reader = DataReader()
-    test_samples, model_memory, model_cpu = reader.read(Sample.DAS_2.value)
+    test_samples, model_memory, model_cpu, model_fake = reader.read(Sample.DAS_2.value)
 
-    n_nodes_candi = [5, 10, 15]
+    n_nodes_candi = [5]
     for i, sample in enumerate(test_samples):
         sample.reset_index(inplace=True)
 
@@ -225,11 +246,24 @@ if __name__ == '__main__':
 
             n_requests = memory_consumption.shape[0]
 
-            init_alloc_path = f'./data/input/DAS-2/init_alloc/nodes_{n_nodes}_sample_{i}.csv'
+            init_alloc_path = f'./data/input/DAS-2/init_alloc/nodes_{n_nodes}/sample_{i}.csv'
             _generate_initial_allocations(init_alloc_path, n_nodes, n_requests)
 
-        runInParallel(run_ga, run_pso, run_linear, run_heuristic, n_nodes=n_nodes, test_samples=test_samples,
-                      model_memory=model_memory, model_cpu=model_cpu)
+        # without classification
+        runInParallel(run_heuristic_cpu_without_class,
+                      run_heuristic_memory_without_class,
+                      run_heuristic_multi_without_class,
+                      args=(n_nodes, test_samples, model_fake)
+                      )
+
+        # with classification
+        runInParallel(run_heuristic_cpu_with_class,
+                      run_heuristic_memory_with_class,
+                      args=(n_nodes, test_samples, model_memory, model_cpu)
+                      )
+
+        # runInParallel(run_ga, run_pso, run_linear, run_heuristic, n_nodes=n_nodes, test_samples=test_samples,
+        #               model_memory=model_memory, model_cpu=model_cpu)
 
 
 

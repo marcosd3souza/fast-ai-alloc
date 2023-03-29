@@ -6,6 +6,7 @@ from methods.base import BaseOptimizer
 class HeuristicOptimizer(BaseOptimizer):
 
     def __init__(self,
+                 metric,
                  n_requests,
                  n_nodes,
                  memory_consumption,
@@ -22,6 +23,8 @@ class HeuristicOptimizer(BaseOptimizer):
             memory_classification,
             cpu_classification
         )
+
+        self.metric = metric
 
         self.memory_consumption = memory_consumption
         self.memory_classification = memory_classification
@@ -56,9 +59,17 @@ class HeuristicOptimizer(BaseOptimizer):
             ]
 
             # heuristic
-            heuristic = sum(node_memory_labels_std, node_cpu_labels_std) + \
-                        (node_memory_consumption + request_memory_consumption) + \
-                        (node_cpu_consumption + request_cpu_consumption)
+            if self.metric == 'cpu':
+                heuristic = node_cpu_labels_std +\
+                            (node_cpu_consumption + request_cpu_consumption)
+
+            elif self.metric == 'memory':
+                heuristic = node_memory_labels_std + \
+                            (node_memory_consumption + request_memory_consumption)
+            else:
+                heuristic = sum(node_memory_labels_std, node_cpu_labels_std) + \
+                            (node_memory_consumption + request_memory_consumption) + \
+                            (node_cpu_consumption + request_cpu_consumption)
 
             best_node = np.argsort(heuristic)[0]
 
