@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-from methods.base import BaseOptimizer
+from code.methods.base import BaseOptimizer
 
 
 class GeneticAlgorithm(BaseOptimizer):
@@ -9,6 +9,7 @@ class GeneticAlgorithm(BaseOptimizer):
     N_CHILDREN = 300
 
     def __init__(self,
+                 metric,
                  n_requests,
                  n_nodes,
                  memory_consumption,
@@ -17,6 +18,7 @@ class GeneticAlgorithm(BaseOptimizer):
                  cpu_classification,
                  initial_allocation_candi):
 
+        self.metric = metric
         self.n_requests = n_requests
         self.n_nodes = n_nodes
         super().__init__(
@@ -41,7 +43,7 @@ class GeneticAlgorithm(BaseOptimizer):
 
             fitness = []
             for p in new_population:
-                fitness.append(self.calc_fitness(p))
+                fitness.append(self.calc_fitness(p, metric=self.metric))
 
             parents = np.array(new_population)[np.argsort(fitness)[0: self.N_PARENTS]]
             children = np.array(new_population)[np.argsort(fitness)[self.N_PARENTS:self.N_CHILDREN]]

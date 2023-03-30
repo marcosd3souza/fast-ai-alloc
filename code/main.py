@@ -82,7 +82,27 @@ def _get_initial_allocations(initial_allocation_path):
     return allocations
 
 
-def run_ga(n_nodes, test_samples, model_memory, model_cpu):
+def run_ga_cpu_with_class(n_nodes, test_samples, model_memory, model_cpu):
+    run_ga(n_nodes, test_samples, model_memory, model_cpu, 'ga_cpu_with_class', metric='cpu')
+
+
+def run_ga_memory_with_class(n_nodes, test_samples, model_memory, model_cpu):
+    run_ga(n_nodes, test_samples, model_memory, model_cpu, 'ga_memory_with_class', metric='memory')
+
+
+def run_ga_cpu_without_class(n_nodes, test_samples, fake_model):
+    run_ga(n_nodes, test_samples, fake_model, fake_model, 'ga_cpu_without_class', metric='cpu')
+
+
+def run_ga_memory_without_class(n_nodes, test_samples, fake_model):
+    run_ga(n_nodes, test_samples, fake_model, fake_model, 'ga_memory_without_class', metric='memory')
+
+
+def run_ga_multi_without_class(n_nodes, test_samples, fake_model):
+    run_ga(n_nodes, test_samples, fake_model, fake_model, 'ga_multi_without_class', metric='multi')
+
+
+def run_ga(n_nodes, test_samples, model_memory, model_cpu, output_name, metric):
     for i, sample in enumerate(test_samples):
         memory_consumption = sample['UsedMemory'].values.reshape(-1, 1)
         cpu_consumption_time = sample['UsedCPUTime'].values.reshape(-1, 1)
@@ -97,6 +117,7 @@ def run_ga(n_nodes, test_samples, model_memory, model_cpu):
 
         # GENETIC ALGORITHM SOLUTION
         ga_solution = GeneticAlgorithm(
+            metric,
             n_requests,
             n_nodes,
             memory_consumption,
@@ -108,7 +129,8 @@ def run_ga(n_nodes, test_samples, model_memory, model_cpu):
 
         ga_solution = pd.DataFrame(ga_solution)
 
-        filepath = Path('./data/output/DAS-2/ga/alloc_' + str(n_nodes) + '/ga_solution_sample_' + str(i) + '.csv')
+        filepath = Path(
+            f'./data/output/DAS-2/{output_name}/alloc_{n_nodes}/{output_name}_solution_sample_{i}.csv')
         filepath.parent.mkdir(parents=True, exist_ok=True)
         ga_solution.to_csv(filepath, sep=';')
 
@@ -250,21 +272,28 @@ if __name__ == '__main__':
             _generate_initial_allocations(init_alloc_path, n_nodes, n_requests)
 
         # without classification
-        runInParallel(run_heuristic_cpu_without_class,
-                      run_heuristic_memory_without_class,
-                      run_heuristic_multi_without_class,
-                      args=(n_nodes, test_samples, model_fake)
-                      )
-
-        # with classification
-        runInParallel(run_heuristic_cpu_with_class,
-                      run_heuristic_memory_with_class,
-                      args=(n_nodes, test_samples, model_memory, model_cpu)
-                      )
+        # runInParallel(run_heuristic_cpu_without_class,
+        #               run_heuristic_memory_without_class,
+        #               run_heuristic_multi_without_class,
+        #               args=(n_nodes, test_samples, model_fake)
+        #               )
+        #
+        # # with classification
+        # runInParallel(run_heuristic_cpu_with_class,
+        #               run_heuristic_memory_with_class,
+        #               args=(n_nodes, test_samples, model_memory, model_cpu)
+        #               )
 
         # runInParallel(run_ga, run_pso, run_linear, run_heuristic, n_nodes=n_nodes, test_samples=test_samples,
         #               model_memory=model_memory, model_cpu=model_cpu)
 
+        # without classification
+        runInParallel(run_ga_cpu_without_class,
+                      run_ga_memory_without_class,
+                      run_ga_multi_without_class,
+                      args=(n_nodes, test_samples, model_fake))
+        # with classification
+        # runInParallel(run_ga, args=(n_nodes, test_samples, model_memory, model_cpu))
 
 
         # memory_fig = _consumption_chart(ga_solution, memory_classification, memory_consumption, 'GA', 'Memory')
