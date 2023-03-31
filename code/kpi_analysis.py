@@ -211,7 +211,7 @@ def kpi_analysis(num_nodes, methods):
 
 
 def create_latex_table_by_method(number_nodes, list_method_results):
-    consumption_kpi_latex = "Consumption KPI Latex Table:\n"
+    consumption_kpi_latex = 'Consumption KPI:\n\n'
 
     for i, nodes in enumerate(number_nodes):
         desc_heuristic_cpu_without_class = list_method_results[i][0].describe()
@@ -281,7 +281,6 @@ def create_latex_table_by_method(number_nodes, list_method_results):
             desc_heuristic_multi_without_class['kpi_cpu_consumption']['std'])
 
         ###############################################################################################################
-
         with open('./data/output/DAS-2/kpi_analysis/latex_method_table.txt', 'w') as f:
             print(consumption_kpi_latex, file=f)
 
@@ -418,7 +417,7 @@ def create_latex_table(number_nodes, results_baseline, results_linear, results_h
 
 
 def main():
-    n_nodes = [5]
+    n_nodes = [5, 10, 15]
 
     method_options = [
         ('heuristic_cpu_without_class', False),
