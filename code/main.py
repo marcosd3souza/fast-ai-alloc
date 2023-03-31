@@ -22,6 +22,10 @@ class Sample(Enum):
     SUN = 'SUN_2022-04-17-11-28-02'
 
 
+def get_initial_allocation_path(n_nodes, sample_id):
+    return f'./data/input/DAS-2/init_alloc/nodes_{n_nodes}/sample_{sample_id}.csv'
+
+
 def _consumption_chart(df_allocation, classification, consumption, method, metric):
     cpm = df_allocation.copy().mul(consumption)
     cpm['label'] = classification.astype('str')
@@ -112,7 +116,7 @@ def run_ga(n_nodes, test_samples, model_memory, model_cpu, output_name, metric):
         memory_classification = model_memory.predict(memory_consumption)
         cpu_classification = model_cpu.predict(cpu_consumption_time)
 
-        init_alloc_path = f'./data/input/DAS-2/init_alloc/nodes_{n_nodes}_sample_{i}.csv'
+        init_alloc_path = get_initial_allocation_path(n_nodes, i)
         population = _get_initial_allocations(init_alloc_path)
 
         # GENETIC ALGORITHM SOLUTION
@@ -129,8 +133,7 @@ def run_ga(n_nodes, test_samples, model_memory, model_cpu, output_name, metric):
 
         ga_solution = pd.DataFrame(ga_solution)
 
-        filepath = Path(
-            f'./data/output/DAS-2/{output_name}/alloc_{n_nodes}/{output_name}_solution_sample_{i}.csv')
+        filepath = Path('./data/output/DAS-2/ga/alloc_' + str(n_nodes) + '/ga_solution_sample_' + str(i) + '.csv')
         filepath.parent.mkdir(parents=True, exist_ok=True)
         ga_solution.to_csv(filepath, sep=';')
 
@@ -145,7 +148,7 @@ def run_pso(n_nodes, test_samples, model_memory, model_cpu):
         memory_classification = model_memory.predict(memory_consumption)
         cpu_classification = model_cpu.predict(cpu_consumption_time)
 
-        init_alloc_path = f'./data/input/DAS-2/init_alloc_{n_nodes}/nodes_{n_nodes}_sample_{i}.csv'
+        init_alloc_path = get_initial_allocation_path(n_nodes, i)
         population = _get_initial_allocations(init_alloc_path)
 
         # PARTICLE-SWARM (PSO) ALGORITHM SOLUTION
@@ -187,7 +190,7 @@ def run_linear(n_nodes, test_samples, model_memory, model_cpu):
 
         linear_solution = pd.DataFrame(linear_solution)
 
-        filepath = Path('./data/output/DAS-2/linear/alloc_' + str(n_nodes) + '/milp_solution_sample_' + str(i) + '.csv')
+        filepath = Path('./data/output/DAS-2/linear/alloc_' + str(n_nodes) + '/linear_solution_sample_' + str(i) + '.csv')
         filepath.parent.mkdir(parents=True, exist_ok=True)
         linear_solution.to_csv(filepath, sep=';')
 
@@ -268,21 +271,21 @@ if __name__ == '__main__':
 
             n_requests = memory_consumption.shape[0]
 
-            init_alloc_path = f'./data/input/DAS-2/init_alloc/nodes_{n_nodes}/sample_{i}.csv'
+            init_alloc_path = get_initial_allocation_path(n_nodes, i)
             _generate_initial_allocations(init_alloc_path, n_nodes, n_requests)
 
         # without classification
-        # runInParallel(run_heuristic_cpu_without_class,
-        #               run_heuristic_memory_without_class,
-        #               run_heuristic_multi_without_class,
-        #               args=(n_nodes, test_samples, model_fake)
-        #               )
-        #
-        # # with classification
-        # runInParallel(run_heuristic_cpu_with_class,
-        #               run_heuristic_memory_with_class,
-        #               args=(n_nodes, test_samples, model_memory, model_cpu)
-        #               )
+        runInParallel(run_heuristic_cpu_without_class,
+                      run_heuristic_memory_without_class,
+                      run_heuristic_multi_without_class,
+                      args=(n_nodes, test_samples, model_fake)
+                      )
+
+        # with classification
+        runInParallel(run_heuristic_cpu_with_class,
+                      run_heuristic_memory_with_class,
+                      args=(n_nodes, test_samples, model_memory, model_cpu)
+                      )
 
         # runInParallel(run_ga, run_pso, run_linear, run_heuristic, n_nodes=n_nodes, test_samples=test_samples,
         #               model_memory=model_memory, model_cpu=model_cpu)
