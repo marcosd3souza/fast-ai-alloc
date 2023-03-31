@@ -275,17 +275,17 @@ if __name__ == '__main__':
             _generate_initial_allocations(init_alloc_path, n_nodes, n_requests)
 
         # without classification
-        runInParallel(run_heuristic_cpu_without_class,
-                      run_heuristic_memory_without_class,
-                      run_heuristic_multi_without_class,
-                      args=(n_nodes, test_samples, model_fake)
-                      )
-
-        # with classification
-        runInParallel(run_heuristic_cpu_with_class,
-                      run_heuristic_memory_with_class,
-                      args=(n_nodes, test_samples, model_memory, model_cpu)
-                      )
+        # runInParallel(run_heuristic_cpu_without_class,
+        #               run_heuristic_memory_without_class,
+        #               run_heuristic_multi_without_class,
+        #               args=(n_nodes, test_samples, model_fake)
+        #               )
+        #
+        # # with classification
+        # runInParallel(run_heuristic_cpu_with_class,
+        #               run_heuristic_memory_with_class,
+        #               args=(n_nodes, test_samples, model_memory, model_cpu)
+        #               )
 
         # runInParallel(run_ga, run_pso, run_linear, run_heuristic, n_nodes=n_nodes, test_samples=test_samples,
         #               model_memory=model_memory, model_cpu=model_cpu)
