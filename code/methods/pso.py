@@ -1,12 +1,13 @@
 import numpy as np
 import random
 
-from methods.base import BaseOptimizer
+from code.methods.base import BaseOptimizer
 
 
 class ParticleSwarmAlgorithm(BaseOptimizer):
 
     def __init__(self,
+                 metric,
                  n_requests,
                  n_nodes,
                  memory_consumption,
@@ -15,6 +16,7 @@ class ParticleSwarmAlgorithm(BaseOptimizer):
                  cpu_classification,
                  initial_allocation_candi):
 
+        self.metric = metric
         self.n_requests = n_requests
         self.n_nodes = n_nodes
         super().__init__(
@@ -46,7 +48,7 @@ class ParticleSwarmAlgorithm(BaseOptimizer):
 
     def optimize(self, max_iter=300):
 
-        best_g_fitness = self.calc_fitness(self.g_best)
+        best_g_fitness = self.calc_fitness(self.g_best, metric=self.metric)
         fitness = [np.inf] * self.INIT_POPULATION_SIZE
         particles = self.init_population.copy()
         for _ in range(max_iter):
@@ -54,11 +56,11 @@ class ParticleSwarmAlgorithm(BaseOptimizer):
                 x = particles[i]
                 v = self.velocities[i]
                 p_best = self.p_best[i]
-                p_best_fitness = self.calc_fitness(self.p_best[i])
+                p_best_fitness = self.calc_fitness(self.p_best[i], metric=self.metric)
                 self.velocities[i] = self._update_velocity(x, v, p_best, self.g_best)
                 particles[i] = self._update_position(x, v)
 
-                fitness[i] = self.calc_fitness(particles[i])
+                fitness[i] = self.calc_fitness(particles[i], metric=self.metric)
 
                 # Update the best position for particle i
                 if fitness[i] < p_best_fitness:

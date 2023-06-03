@@ -419,12 +419,20 @@ def create_latex_table(number_nodes, results_baseline, results_linear, results_h
 def main():
     n_nodes = [5, 10, 15]
 
+    # method_options = [
+    #     ('heuristic_cpu_without_class', False),
+    #     ('heuristic_memory_without_class', False),
+    #     ('heuristic_cpu_with_class', True),
+    #     ('heuristic_memory_with_class', True),
+    #     ('heuristic_multi_without_class', False)
+    # ]
+
     method_options = [
-        ('heuristic_cpu_without_class', False),
-        ('heuristic_memory_without_class', False),
-        ('heuristic_cpu_with_class', True),
-        ('heuristic_memory_with_class', True),
-        ('heuristic_multi_without_class', False)
+        ('ga_cpu_without_class', False),
+        ('ga_memory_without_class', False),
+        ('ga_cpu_with_class', True),
+        ('ga_memory_with_class', True),
+        ('ga_multi_without_class', False)
     ]
 
     list_method_results = [None] * len(n_nodes)

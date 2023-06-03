@@ -1,14 +1,16 @@
-from data_reader import DataReader
 from enum import Enum
+from multiprocessing import Process
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import plotly.express as px
+
+from data_reader import DataReader
 from methods.genetic import GeneticAlgorithm
 from methods.heuristic import HeuristicOptimizer
 from methods.integer_linear_solver import IntegerLinearSolver
 from methods.pso import ParticleSwarmAlgorithm
-import pandas as pd
-import numpy as np
-import plotly.express as px
-from pathlib import Path
-from multiprocessing import Process
 
 
 class Sample(Enum):
@@ -86,7 +88,27 @@ def _get_initial_allocations(initial_allocation_path):
     return allocations
 
 
-def run_ga(n_nodes, test_samples, model_memory, model_cpu):
+def run_ga_cpu_with_class(n_nodes, test_samples, model_memory, model_cpu):
+    run_ga(n_nodes, test_samples, model_memory, model_cpu, 'ga_cpu_with_class', metric='cpu')
+
+
+def run_ga_memory_with_class(n_nodes, test_samples, model_memory, model_cpu):
+    run_ga(n_nodes, test_samples, model_memory, model_cpu, 'ga_memory_with_class', metric='memory')
+
+
+def run_ga_cpu_without_class(n_nodes, test_samples, fake_model):
+    run_ga(n_nodes, test_samples, fake_model, fake_model, 'ga_cpu_without_class', metric='cpu')
+
+
+def run_ga_memory_without_class(n_nodes, test_samples, fake_model):
+    run_ga(n_nodes, test_samples, fake_model, fake_model, 'ga_memory_without_class', metric='memory')
+
+
+def run_ga_multi_without_class(n_nodes, test_samples, fake_model):
+    run_ga(n_nodes, test_samples, fake_model, fake_model, 'ga_multi_without_class', metric='multi')
+
+
+def run_ga(n_nodes, test_samples, model_memory, model_cpu, output_name, metric):
     for i, sample in enumerate(test_samples):
         memory_consumption = sample['UsedMemory'].values.reshape(-1, 1)
         cpu_consumption_time = sample['UsedCPUTime'].values.reshape(-1, 1)
@@ -101,6 +123,7 @@ def run_ga(n_nodes, test_samples, model_memory, model_cpu):
 
         # GENETIC ALGORITHM SOLUTION
         ga_solution = GeneticAlgorithm(
+            metric,
             n_requests,
             n_nodes,
             memory_consumption,
@@ -112,12 +135,32 @@ def run_ga(n_nodes, test_samples, model_memory, model_cpu):
 
         ga_solution = pd.DataFrame(ga_solution)
 
-        filepath = Path('./data/output/DAS-2/ga/alloc_' + str(n_nodes) + '/ga_solution_sample_' + str(i) + '.csv')
+        filepath = Path(f'./data/output/DAS-2/{output_name}/alloc_{n_nodes}/{output_name}_solution_sample_{i}.csv')
         filepath.parent.mkdir(parents=True, exist_ok=True)
         ga_solution.to_csv(filepath, sep=';')
 
 
-def run_pso(n_nodes, test_samples, model_memory, model_cpu):
+def run_pso_cpu_with_class(n_nodes, test_samples, model_memory, model_cpu):
+    run_pso(n_nodes, test_samples, model_memory, model_cpu, 'pso_cpu_with_class', metric='cpu')
+
+
+def run_pso_memory_with_class(n_nodes, test_samples, model_memory, model_cpu):
+    run_pso(n_nodes, test_samples, model_memory, model_cpu, 'pso_memory_with_class', metric='memory')
+
+
+def run_pso_cpu_without_class(n_nodes, test_samples, fake_model):
+    run_pso(n_nodes, test_samples, fake_model, fake_model, 'pso_cpu_without_class', metric='cpu')
+
+
+def run_pso_memory_without_class(n_nodes, test_samples, fake_model):
+    run_pso(n_nodes, test_samples, fake_model, fake_model, 'pso_memory_without_class', metric='memory')
+
+
+def run_pso_multi_without_class(n_nodes, test_samples, fake_model):
+    run_pso(n_nodes, test_samples, fake_model, fake_model, 'pso_multi_without_class', metric='multi')
+
+
+def run_pso(n_nodes, test_samples, model_memory, model_cpu, output_name, metric):
     for i, sample in enumerate(test_samples):
         memory_consumption = sample['UsedMemory'].values.reshape(-1, 1)
         cpu_consumption_time = sample['UsedCPUTime'].values.reshape(-1, 1)
@@ -132,6 +175,7 @@ def run_pso(n_nodes, test_samples, model_memory, model_cpu):
 
         # PARTICLE-SWARM (PSO) ALGORITHM SOLUTION
         pso_solution = ParticleSwarmAlgorithm(
+            metric,
             n_requests,
             n_nodes,
             memory_consumption,
@@ -143,7 +187,7 @@ def run_pso(n_nodes, test_samples, model_memory, model_cpu):
 
         pso_solution = pd.DataFrame(pso_solution)
 
-        filepath = Path('./data/output/DAS-2/pso/alloc_' + str(n_nodes) + '/pso_solution_sample_' + str(i) + '.csv')
+        filepath = Path(f'./data/output/DAS-2/{output_name}/alloc_{n_nodes}/{output_name}_solution_sample_{i}.csv')
         filepath.parent.mkdir(parents=True, exist_ok=True)
         pso_solution.to_csv(filepath, sep=';')
 
@@ -237,7 +281,7 @@ if __name__ == '__main__':
     reader = DataReader()
     test_samples, model_memory, model_cpu, model_fake = reader.read(Sample.DAS_2.value)
 
-    n_nodes_candi = [5]
+    n_nodes_candi = [5, 10, 15]
     for i, sample in enumerate(test_samples):
         sample.reset_index(inplace=True)
 
@@ -259,15 +303,25 @@ if __name__ == '__main__':
         #               run_heuristic_multi_without_class,
         #               args=(n_nodes, test_samples, model_fake)
         #               )
-
-        # with classification
-        runInParallel(run_ga,
-                      args=(n_nodes, test_samples, model_memory, model_cpu)
-                      )
+        #
+        # # with classification
+        # runInParallel(run_heuristic_cpu_with_class,
+        #               run_heuristic_memory_with_class,
+        #               args=(n_nodes, test_samples, model_memory, model_cpu)
+        #               )
 
         # runInParallel(run_ga, run_pso, run_linear, run_heuristic, n_nodes=n_nodes, test_samples=test_samples,
         #               model_memory=model_memory, model_cpu=model_cpu)
 
+        # without classification
+        runInParallel(run_pso_cpu_without_class,
+                      run_pso_memory_without_class,
+                      run_pso_multi_without_class,
+                      args=(n_nodes, test_samples, model_fake))
+        # with classification
+        runInParallel(run_pso_cpu_with_class,
+                      run_pso_memory_with_class,
+                      args=(n_nodes, test_samples, model_memory, model_cpu))
 
 
         # memory_fig = _consumption_chart(ga_solution, memory_classification, memory_consumption, 'GA', 'Memory')

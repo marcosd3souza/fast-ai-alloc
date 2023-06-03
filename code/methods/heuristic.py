@@ -1,6 +1,6 @@
 import numpy as np
 
-from methods.base import BaseOptimizer
+from code.methods.base import BaseOptimizer
 
 
 class HeuristicOptimizer(BaseOptimizer):
