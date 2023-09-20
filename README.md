@@ -7,7 +7,23 @@ In cloud platforms, a common task is to allocate computational resources, e.g., 
 Keywords
 Cloud computingResource allocationSelf-Organizing MapsExact programmingParticle Swarm OptimizationGenetic Algorithms
 
-Ref: https://www.sciencedirect.com/science/article/pii/S0167739X23003126
+Ref:
+Oliveira, M. D. S., Junior, F. E. F., Cerveny, L., Miyazaki, F. A., Neri, L. V., da Silva, A., ... & de Lima, Ó. D. W. (2023). FastAiAlloc: A real-time multi-resources allocation framework proposal based on predictive model and multiple optimization strategies. Future Generation Computer Systems, 149, 622-636.
+
+'''
+@article{DESOLIVEIRA2023622,
+title = {FastAiAlloc: A real-time multi-resources allocation framework proposal based on predictive model and multiple optimization strategies},
+journal = {Future Generation Computer Systems},
+volume = {149},
+pages = {622-636},
+year = {2023},
+issn = {0167-739X},
+doi = {https://doi.org/10.1016/j.future.2023.08.014},
+url = {https://www.sciencedirect.com/science/article/pii/S0167739X23003126},
+author = {Marcos {de S. Oliveira} and Francisco Erivaldo Fernandes and Lukas Cerveny and Flávia Akemi Miyazaki and Leonardo Valeriano Neri and Alan {da Silva} and Beatriz Leandro Bonafini and Victor Medeiros Outtes Alves and Órion Darshan Winter {de Lima}},
+keywords = {Cloud computing, Resource allocation, Self-Organizing Maps, Exact programming, Particle Swarm Optimization, Genetic Algorithms}
+}
+'''
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
