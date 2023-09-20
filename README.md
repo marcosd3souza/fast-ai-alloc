@@ -10,7 +10,7 @@ Cloud computingResource allocationSelf-Organizing MapsExact programmingParticle 
 Ref:
 Oliveira, M. D. S., Junior, F. E. F., Cerveny, L., Miyazaki, F. A., Neri, L. V., da Silva, A., ... & de Lima, Ó. D. W. (2023). FastAiAlloc: A real-time multi-resources allocation framework proposal based on predictive model and multiple optimization strategies. Future Generation Computer Systems, 149, 622-636.
 
-'''
+```
 @article{DESOLIVEIRA2023622,
 title = {FastAiAlloc: A real-time multi-resources allocation framework proposal based on predictive model and multiple optimization strategies},
 journal = {Future Generation Computer Systems},
@@ -23,7 +23,7 @@ url = {https://www.sciencedirect.com/science/article/pii/S0167739X23003126},
 author = {Marcos {de S. Oliveira} and Francisco Erivaldo Fernandes and Lukas Cerveny and Flávia Akemi Miyazaki and Leonardo Valeriano Neri and Alan {da Silva} and Beatriz Leandro Bonafini and Victor Medeiros Outtes Alves and Órion Darshan Winter {de Lima}},
 keywords = {Cloud computing, Resource allocation, Self-Organizing Maps, Exact programming, Particle Swarm Optimization, Genetic Algorithms}
 }
-'''
+```
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
