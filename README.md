@@ -1,4 +1,4 @@
-![FastAiAlloc](https://github.com/marcosd3souza/fast-ai-alloc/blob/main/2-RTAI_workflow.jpg)
+![FastAiAlloc](https://github.com/marcosd3souza/fast-ai-alloc/blob/main/assets/2-RTAI_workflow.jpg)
 
 # FastAiAlloc: A real-time multi-resources allocation framework proposal based on predictive model and multiple optimization strategies
 
