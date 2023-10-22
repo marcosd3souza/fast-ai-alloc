@@ -18,13 +18,13 @@ class TestDataGenerator(unittest.TestCase):
         # check if the data has the correct number of columns
         assert data.shape[1] == 4
         # check if the data has the correct column names
-        assert list(data.columns) == ["node", "pod", "cpu_usage", "memory_usage"]
+        assert list(data.columns) == ["node_name", "pod_name", "cpu_usage", "memory_usage"]
         # check if the data has the correct data types
         assert data.dtypes.tolist() == [object, object, float, float]
         # check if the data has the correct number of unique nodes
-        assert len(data["node"].unique()) == 10
+        assert len(data["node_name"].unique()) == 10
         # check if the data has the correct number of unique pods
-        assert len(data["pod"].unique()) == 1000
+        assert len(data["pod_name"].unique()) == 1000
         # check if the data has the correct minimum cpu usage value
         assert data["cpu_usage"].min() >= 1
         # check if the data has the correct maximum cpu usage value
@@ -34,4 +34,4 @@ class TestDataGenerator(unittest.TestCase):
         # check if the data has the correct maximum memory usage value
         assert data["memory_usage"].max() <= 6000
         # check if the data has the correct number of unique node-pod combinations
-        assert len(data.groupby(["node", "pod"]).size()) == 1000
+        assert len(data.groupby(["node_name", "pod_name"]).size()) == 1000
