@@ -1,4 +1,4 @@
-node,pod,cpu_usage,memory_usage
+node_name,pod_name,cpu_usage,memory_usage
 node_2,pod_1,40.45,3918.18
 node_6,pod_2,49.81,5597.65
 node_4,pod_3,84.14,5406.06

@@ -200,3 +200,30 @@ class TestBase(unittest.TestCase):
             [1, 0],
         ]), metric=BaseOptimizer.METRIC_CPU)
         assert fitness == 1
+
+    def test_optimization_to_dataframe(self):
+        initial_allocation = pd.DataFrame(
+            data=[
+                ['node_1', 'pod_1', 3, 67, 0, 0],
+                ['node_2', 'pod_2', 10, 1400, 1, 1],
+                ['node_1', 'pod_3', 6, 857, 1, 1],
+                ['node_1', 'pod_4', 1, 280, 0, 0],
+            ],
+            columns=["node_name", "pod_name", "cpu_usage", "memory_usage", "cpu_class", "memory_class"]
+        )
+        base = BaseOptimizer(initial_allocation)
+        allocation_suggestion = np.array([
+            [1, 0],
+            [1, 0],
+            [0, 1],
+            [0, 1],
+        ])
+        optimized_dataframe = base.optimization_to_dataframe(allocation_suggestion)
+        assert optimized_dataframe.shape[0] == 4
+        assert optimized_dataframe.shape[1] == 6
+        assert optimized_dataframe['node_name'].tolist() == ['node_1', 'node_1', 'node_2', 'node_2']
+        assert optimized_dataframe['pod_name'].tolist() == ['pod_1', 'pod_2', 'pod_3', 'pod_4']
+        assert optimized_dataframe['cpu_usage'].tolist() == [3, 10, 6, 1]
+        assert optimized_dataframe['memory_usage'].tolist() == [67, 1400, 857, 280]
+        assert optimized_dataframe['cpu_class'].tolist() == [0, 1, 1, 0]
+        assert optimized_dataframe['memory_class'].tolist() == [0, 1, 1, 0]

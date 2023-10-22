@@ -1,5 +1,5 @@
 from enum import Enum
 
 
-class ClassificationAlgorithms(Enum):
+class ClassificationAlgorithm(Enum):
     SELF_ORGANIZING_MAPS = 'som'

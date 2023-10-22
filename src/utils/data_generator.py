@@ -30,4 +30,4 @@ class DataGenerator:
             memory_usage = round(random.uniform(self.memory_usage_min, self.memory_usage_max), 2)
             data.append([node, pod, cpu_usage, memory_usage])
 
-        return pd.DataFrame(data, columns=["node", "pod", "cpu_usage", "memory_usage"])
+        return pd.DataFrame(data, columns=["node_name", "pod_name", "cpu_usage", "memory_usage"])

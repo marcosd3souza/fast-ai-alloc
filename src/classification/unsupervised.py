@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn_som.som import SOM as sklearn_som
+import logging
 
 
 class SOM:
@@ -25,11 +26,12 @@ class SOM:
     def fit_memory(self):
         self.model_memory = sklearn_som(m=self.width, n=self.height, dim=1, random_state=self.random_state)
         self.model_memory.fit(self.dataframe['memory_usage'].values.reshape(-1, 1))
-        print('Model memory fitted')
+        logging.log(logging.INFO, 'Model memory fitted')
 
     def fit_cpu(self):
         self.model_cpu = sklearn_som(m=self.width, n=self.height, dim=1, random_state=self.random_state)
         self.model_cpu.fit(self.dataframe['cpu_usage'].values.reshape(-1, 1))
+        logging.log(logging.INFO, 'Model cpu fitted')
 
     def predict_memory(self, memory_data: np.array) -> np.array:
         return self.model_memory.predict(memory_data)

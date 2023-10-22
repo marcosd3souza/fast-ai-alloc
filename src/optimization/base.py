@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import logging
 
 
 class BaseOptimizer:
@@ -37,7 +38,26 @@ class BaseOptimizer:
             allocated_node = self.dataframe[self.dataframe['pod_name'] == pod]['node_name'].values[0]
             self.allocation_matrix[i, self.nodes == allocated_node] = 1
 
-    def calc_fitness(self, allocation_suggestion: np.array, metric: str = METRIC_MULTI):
+    def optimization_to_dataframe(self, allocation_suggestion: np.array) -> pd.DataFrame:
+        optimized_list = []
+        for pod_index in range(len(self.pods)):
+            node_index = np.where(allocation_suggestion[pod_index, :] == 1)[0][0]
+            optimized_list.append({
+                'node_name': self.nodes[node_index],
+                'pod_name': self.pods[pod_index],
+                'cpu_usage': self.pods_cpu[pod_index],
+                'memory_usage': self.pods_memory[pod_index],
+                'cpu_class': self.pods_cpu_classification[pod_index],
+                'memory_class': self.pods_memory_classification[pod_index],
+            })
+        optimized_dataframe = pd.DataFrame(optimized_list, columns=self.dataframe.columns)
+        return optimized_dataframe
+
+    @staticmethod
+    def add_log(msg: str):
+        logging.info(f'>> {msg}')
+
+    def calc_fitness(self, allocation_suggestion: np.array, metric: str = METRIC_MULTI) -> float:
         if metric == self.METRIC_MULTI:
             mem_consumption_by_nodes = (self.pods_memory.reshape(-1, 1) * allocation_suggestion).sum(axis=0)
             cpu_consumption_by_nodes = (self.pods_cpu.reshape(-1, 1) * allocation_suggestion).sum(axis=0)
